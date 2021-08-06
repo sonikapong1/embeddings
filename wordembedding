@@ -1,0 +1,34 @@
+import tensorflow_hub as hub
+import tensorflow_text as text
+import tensorflow.compat.v1 as tf
+
+def using_bert():
+  preprocessor_url='https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3'
+  encoder_url='https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4'
+  text_test=['nice movie indeed','i love python']
+  bert_preprocess_model=hub.KerasLayer(preprocessor_url)
+  text_preprocessed=bert_preprocess_model(text_test)
+  text_preprocessed.keys()
+  text_preprocessed['input_word_ids']
+  bert_model=hub.KerasLayer(encoder_url)
+  bert_results=bert_model(text_preprocessed)
+  bert_results.keys()
+  return(bert_results['sequence_output'])
+
+
+def using_elmo():
+  tf.disable_eager_execution()
+  elmo = hub.Module("https://tfhub.dev/google/elmo/3", trainable=True)
+  embeddings = elmo(["I love to watch TV","I am wearing a wrist watch"],signature="default",as_dict=True)["elmo"]
+  init = tf.initialize_all_variables()
+  sess = tf.Session()
+  sess.run(init)
+  return(sess.run(embeddings))
+
+val = input("\t\t\t***MENU**\n1. BERT\n2. ELMO\n")
+if val == '1':
+  results=using_bert()
+  print(results)
+elif val =='2':
+  result=using_elmo()
+  print(result)
